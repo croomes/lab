@@ -3,6 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: hajimari-config
+  namesapce: hajimari
 spec:
   accessModes:
     - ReadWriteOnce
