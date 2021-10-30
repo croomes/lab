@@ -12,8 +12,8 @@ spec:
     solvers:
       - dns01:
           cloudDNS:
-            project: "home-260614"
-            apiKeySecretRef:
+            project: "${SECRET_GCLOUD_PROJECT}"
+            serviceAccountSecretRef:
               name: gcloud-sa
               key: key.json
         selector:

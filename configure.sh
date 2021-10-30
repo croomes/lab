@@ -27,13 +27,13 @@ main() {
     parse_command_line "$@"
 
     verify_binaries
+    verify_gcloud_key
 
     if [[ "${verify}" == 1 ]]; then
         verify_ansible_hosts
         verify_metallb
         verify_kubevip
         verify_gpg
-        verify_gcloud_key
         success
     else
         # sops configuration file
@@ -191,6 +191,9 @@ verify_gcloud_key() {
         _log "ERROR" "--gcloud_key '${gcloud_key}' is not a valid gcloud service account key file"
         exit 1
     fi
+
+    export BOOTSTRAP_GCLOUD_PROJECT=$(jq -r .project_id < "${gcloud_key}")
+    _has_envar "BOOTSTRAP_GCLOUD_PROJECT"
 }
 
 verify_ansible_hosts() {
