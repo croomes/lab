@@ -11,11 +11,11 @@ spec:
       name: letsencrypt-staging
     solvers:
       - dns01:
-          cloudflare:
-            email: "${SECRET_CLOUDFLARE_EMAIL}"
+          cloudDNS:
+            project: "home-260614"
             apiKeySecretRef:
-              name: cloudflare-api-key
-              key: api-key
+              name: gcloud-sa
+              key: key.json
         selector:
           dnsZones:
             - ${SECRET_DOMAIN}
