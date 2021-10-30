@@ -32,14 +32,14 @@ For provisioning the following tools will be used:
 
 - [Ubuntu](https://ubuntu.com/download/server) - this is a pretty universal operating system that supports running all kinds of home related workloads in Kubernetes
 - [Ansible](https://www.ansible.com) - this will be used to provision the Ubuntu operating system to be ready for Kubernetes and also to install k3s
-- [Terraform](https://www.terraform.io) - in order to help with the DNS settings this will be used to provision an already existing Cloudflare domain and DNS settings
 
 ## :memo:&nbsp; Prerequisites
 
 ### :computer:&nbsp; Systems
 
 - One or more nodes with a fresh install of [Ubuntu Server 20.04](https://ubuntu.com/download/server). These nodes can be bare metal or VMs.
-- A [Cloudflare](https://www.cloudflare.com/) account with a domain, this will be managed by Terraform.
+- A [Google Cloud](https://console.cloud.google.com/) account with a domain
+  managed in Cloud DNS.
 - Some experience in debugging problems and a positive attitude ;)
 
 ### :wrench:&nbsp; Tools
@@ -60,7 +60,6 @@ For provisioning the following tools will be used:
 | [kubectl](https://kubernetes.io/docs/tasks/tools/)                 | Allows you to run commands against Kubernetes clusters              |
 | [pinentry](https://gnupg.org/related_software/pinentry/index.html) | Allows GnuPG to read passphrases and PIN numbers                    |
 | [sops](https://github.com/mozilla/sops)                            | Encrypts k8s secrets with GnuPG                                     |
-| [terraform](https://www.terraform.io)                              | Prepare a Cloudflare domain to be used with the cluster             |
 
 #### Optional
 
@@ -109,10 +108,6 @@ cluster
 ```
 
 ## :rocket:&nbsp; Lets go!
-
-Very first step will be to create a new repository by clicking the **Use this template** button on this page.
-
-Clone the repo to you local workstation and `cd` into it.
 
 :round_pushpin: **All of the below commands** are run on your **local** workstation, **not** on any of your cluster nodes.
 
@@ -167,15 +162,14 @@ gpg --list-secret-keys "${FLUX_KEY_NAME}"
 
 3. You will need the Fingerprints in the configuration section below. For example, in the above steps you will need `772154FFF783DE317KLCA0EC77149AC618D75581` and `AB675CE4CC64251G3S9AE1DAA88ARRTY2C009E2D`
 
-### :cloud:&nbsp; Global Cloudflare API Key
 
-In order to use Terraform and `cert-manager` with the Cloudflare DNS challenge you will need to create a API key.
+### :cloud:&nbsp; Google Cloud Service Account
 
-1. Head over to Cloudflare and create a API key by going [here](https://dash.cloudflare.com/profile/api-tokens).
-
-2. Under the `API Keys` section, create a global API Key.
-
-3. Use the API Key in the configuration section below.
+```console
+gcloud iam service-accounts create dns01-solver --display-name "dns01-solver"
+gcloud projects add-iam-policy-binding $PROJECT_ID --member serviceAccount:dns01-solver@$PROJECT_ID.iam.gserviceaccount.com --role roles/dns.admin
+gcloud iam service-accounts keys create key.json --iam-account dns01-solver@$PROJECT_ID.iam.gserviceaccount.com
+```
 
 ### :page_facing_up:&nbsp; Configuration
 
@@ -319,12 +313,6 @@ Our [wiki](https://github.com/k8s-at-home/template-cluster-k3s/wiki) is a good p
 ### :robot:&nbsp; Integrations
 
 Our Check out our [wiki](https://github.com/k8s-at-home/template-cluster-k3s/wiki) for more integrations!
-
-## :grey_question:&nbsp; What's next
-
-The world is your cluster, try installing another application or if you have a NAS and want storage back by that check out the helm charts for [democratic-csi](https://github.com/democratic-csi/democratic-csi), [csi-driver-nfs](https://github.com/kubernetes-csi/csi-driver-nfs) or [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner).
-
-If you plan on exposing your ingress to the world from your home. Checkout [our rough guide](https://docs.k8s-at-home.com/guides/dyndns/) to run a k8s `CronJob` to update DDNS.
 
 ## :handshake:&nbsp; Thanks
 
