@@ -107,6 +107,16 @@ cluster
     └── cert-manager
 ```
 
+## TODO
+
+Run these steps manually for now.
+
+### Add system user to Ansible
+
+```console
+sudo adduser --uid 568 --group --system --disabled-password --no-create-home media
+```
+
 ## :rocket:&nbsp; Lets go!
 
 :round_pushpin: **All of the below commands** are run on your **local** workstation, **not** on any of your cluster nodes.
