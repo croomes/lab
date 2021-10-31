@@ -55,7 +55,15 @@ spec:
       config:
         enabled: true
         existingClaim: plex
-      media:
+      movies:
         enabled: true
-        existingClaim: media
-        mountPath: /data
+        existingClaim: movies
+        mountPath: /data/movies
+      tv:
+        enabled: true
+        existingClaim: tv
+        mountPath: /data/tv
+      music:
+        enabled: true
+        existingClaim: music
+        mountPath: /data/music       
