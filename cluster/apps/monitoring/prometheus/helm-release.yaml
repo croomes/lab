@@ -41,6 +41,7 @@ spec:
           - secretName: prometheus-tls
             hosts:
               - prometheus.${SECRET_DOMAIN}      
+    serverFiles:
       prometheus.yml:
         scrape_configs:
           - job_name: office_temp
