@@ -41,3 +41,9 @@ spec:
           - secretName: prometheus-tls
             hosts:
               - prometheus.${SECRET_DOMAIN}      
+      prometheus.yml:
+        scrape_configs:
+          - job_name: office_temp
+            static_configs:
+              - targets:
+                - http://192.168.1.33:9090/metrics
