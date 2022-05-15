@@ -1,0 +1,73 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: plex
+  namespace: media
+spec:
+  releaseName: plex
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: plex
+      version: 6.0.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: ghcr.io/k8s-at-home/plex
+      tag: latest
+      pullPolicy: Always
+    env:
+      TZ: "Europe/London"
+    podSecurityContext:
+      supplementalGroups:
+      - 568
+    # service:
+    #   main:
+    #     primary: true
+    #     ports:
+    #       http:
+    #         port: 32400
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          external-dns/is-public: "true"
+          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          hajimari.io/appName: "plex"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "plex"
+        hosts:
+        - host: "plex.${SECRET_DOMAIN}"
+          paths:
+          - path: /
+            pathType: Prefix
+        tls:
+        - hosts:
+          - "plex.${SECRET_DOMAIN}"
+          secretName: "plex-tls"
+    hostNetwork: true
+    persistence:
+      config:
+        enabled: true
+        existingClaim: plex
+      movies:
+        enabled: true
+        existingClaim: movies
+        mountPath: /data/movies
+      tv:
+        enabled: true
+        existingClaim: tv
+        mountPath: /data/tv
+      music:
+        enabled: true
+        existingClaim: music
+        mountPath: /data/music       

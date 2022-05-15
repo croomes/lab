@@ -22,18 +22,18 @@ EOF
 
 main() {
     local verify=
+    local gcloud_key=
 
     parse_command_line "$@"
 
     verify_binaries
+    verify_gcloud_key
 
     if [[ "${verify}" == 1 ]]; then
         verify_ansible_hosts
         verify_metallb
         verify_kubevip
         verify_gpg
-        verify_git_repository
-        verify_cloudflare
         success
     else
         # sops configuration file
@@ -48,14 +48,9 @@ main() {
             > "${PROJECT_DIR}/cluster/core/kube-system/kube-vip/daemon-set.yaml"
         envsubst < "${PROJECT_DIR}/tmpl/cluster/cluster-secrets.sops.yaml" \
             > "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
-        envsubst < "${PROJECT_DIR}/tmpl/cluster/cert-manager-secret.sops.yaml" \
-            > "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
+        kubectl -n cert-manager create secret generic gcloud-sa --from-file=${gcloud_key} -o yaml --dry-run=client > "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
-        # terraform
-        envsubst < "${PROJECT_DIR}/tmpl/terraform/secret.sops.yaml" \
-            > "${PROJECT_DIR}/provision/terraform/cloudflare/secret.sops.yaml"
-        sops --encrypt --in-place "${PROJECT_DIR}/provision/terraform/cloudflare/secret.sops.yaml"
         # ansible
         envsubst < "${PROJECT_DIR}/tmpl/ansible/kube-vip.yml" \
             > "${PROJECT_DIR}/provision/ansible/inventory/group_vars/kubernetes/kube-vip.yml"
@@ -73,6 +68,10 @@ parse_command_line() {
                 ;;
             --verify)
                 verify=1
+                ;;
+            --gcloud-key)
+                gcloud_key=$2
+                shift
                 ;;
             *)
                 break
@@ -183,28 +182,18 @@ verify_git_repository() {
     export GIT_TERMINAL_PROMPT=1
 }
 
-verify_cloudflare() {
-    local account_zone=
-    local errors=
-
-    _has_envar "BOOTSTRAP_CLOUDFLARE_APIKEY"
-    _has_envar "BOOTSTRAP_CLOUDFLARE_DOMAIN"
-    _has_envar "BOOTSTRAP_CLOUDFLARE_EMAIL"
-
-    # Try to retrieve zone information from Cloudflare's API
-    account_zone=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=${BOOTSTRAP_CLOUDFLARE_DOMAIN}&status=active" \
-        -H "X-Auth-Email: ${BOOTSTRAP_CLOUDFLARE_EMAIL}" \
-        -H "X-Auth-Key: ${BOOTSTRAP_CLOUDFLARE_APIKEY}" \
-        -H "Content-Type: application/json"
-    )
-
-    if [[ "$(echo "${account_zone}" | jq ".success")" == "true" ]]; then
-        _log "INFO" "Verified Cloudflare Account and Zone information"
-    else
-        errors=$(echo "${account_zone}" | jq -c ".errors")
-        _log "ERROR" "Unable to get Cloudflare Account and Zone information ${errors}"
+verify_gcloud_key() {
+    if [ -z "${gcloud_key}" ]; then
+        _log "ERROR" "--gcloud_key must point to a valid gcloud service account key file"
         exit 1
     fi
+        if [ ! -f "${gcloud_key}" ]; then
+        _log "ERROR" "--gcloud_key '${gcloud_key}' is not a valid gcloud service account key file"
+        exit 1
+    fi
+
+    export BOOTSTRAP_GCLOUD_PROJECT=$(jq -r .project_id < "${gcloud_key}")
+    _has_envar "BOOTSTRAP_GCLOUD_PROJECT"
 }
 
 verify_ansible_hosts() {

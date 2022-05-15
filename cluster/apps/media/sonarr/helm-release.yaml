@@ -1,0 +1,68 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  releaseName: sonarr
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: sonarr
+      version: 15.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: ghcr.io/k8s-at-home/sonarr
+      tag: latest
+      pullPolicy: Always
+    env:
+      TZ: "Europe/London"
+    podSecurityContext:
+      supplementalGroups:
+      - 568
+    service:
+      main:
+        ports:
+          http:
+            port: 8989
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          external-dns/is-public: "true"
+          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          hajimari.io/appName: "sonarr"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "television-classic"
+        hosts:
+        - host: "sonarr.${SECRET_DOMAIN}"
+          paths:
+          - path: /
+            pathType: Prefix
+        tls:
+        - hosts:
+          - "sonarr.${SECRET_DOMAIN}"
+          secretName: "sonarr-tls"
+    hostNetwork: true
+    persistence:
+      config:
+        enabled: true
+        existingClaim: sonarr
+      downloads:
+        enabled: true
+        existingClaim: downloads
+        mountPath: /config/Downloads
+      tv:
+        enabled: true
+        existingClaim: tv
+        mountPath: /tv        

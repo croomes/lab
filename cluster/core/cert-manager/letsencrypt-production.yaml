@@ -11,11 +11,11 @@ spec:
       name: letsencrypt-production
     solvers:
       - dns01:
-          cloudflare:
-            email: "${SECRET_CLOUDFLARE_EMAIL}"
-            apiKeySecretRef:
-              name: cloudflare-api-key
-              key: api-key
+          cloudDNS:
+            project: "${SECRET_GCLOUD_PROJECT}"
+            serviceAccountSecretRef:
+              name: gcloud-sa
+              key: key.json
         selector:
           dnsZones:
             - ${SECRET_DOMAIN}
