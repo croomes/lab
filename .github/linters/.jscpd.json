@@ -1,0 +1,10 @@
+{
+    "threshold": 0,
+    "reporters": [
+      "consoleFull"
+    ],
+    "ignore": [
+      "**/prometheus/helm-release.yaml"
+    ],
+    "absolute": true
+  }
