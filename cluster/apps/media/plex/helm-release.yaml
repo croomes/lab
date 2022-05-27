@@ -26,13 +26,7 @@ spec:
       TZ: "Europe/London"
     podSecurityContext:
       supplementalGroups:
-      - 568
-    # service:
-    #   main:
-    #     primary: true
-    #     ports:
-    #       http:
-    #         port: 32400
+        - 568
     ingress:
       main:
         enabled: true
@@ -46,14 +40,14 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "plex"
         hosts:
-        - host: "plex.${SECRET_DOMAIN}"
-          paths:
-          - path: /
-            pathType: Prefix
+          - host: "plex.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
         tls:
-        - hosts:
-          - "plex.${SECRET_DOMAIN}"
-          secretName: "plex-tls"
+          - hosts:
+              - "plex.${SECRET_DOMAIN}"
+        secretName: "plex-tls"
     hostNetwork: true
     persistence:
       config:
@@ -70,4 +64,4 @@ spec:
       music:
         enabled: true
         existingClaim: music
-        mountPath: /data/music       
+        mountPath: /data/music
