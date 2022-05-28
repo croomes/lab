@@ -40,13 +40,14 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "plex"
         hosts:
-          - host: "plex.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
+        - host: "plex.${SECRET_DOMAIN}"
+          paths:
+          - path: /
+            pathType: Prefix
         tls:
-          - hosts:
-              - "plex.${SECRET_DOMAIN}"
+        - hosts:
+          - "plex.${SECRET_DOMAIN}"
+          secretName: "plex-tls"
         secretName: "plex-tls"
     hostNetwork: true
     persistence:
