@@ -220,7 +220,7 @@ gcloud iam service-accounts keys create key.json --iam-account dns01-solver@$PRO
 4. If everything goes as planned you should see Ansible running the k3s install Playbook against your nodes.
 
 5. Verify the nodes are online
-   
+
 ```sh
 kubectl --kubeconfig=./provision/kubeconfig get nodes
 # NAME           STATUS   ROLES                       AGE     VERSION

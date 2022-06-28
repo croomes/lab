@@ -65,4 +65,4 @@ spec:
       tv:
         enabled: true
         existingClaim: tv
-        mountPath: /tv        
+        mountPath: /tv

@@ -65,4 +65,4 @@ spec:
       movies:
         enabled: true
         existingClaim: movies
-        mountPath: /movies 
+        mountPath: /movies

@@ -57,4 +57,4 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: radarr    
+        existingClaim: radarr
