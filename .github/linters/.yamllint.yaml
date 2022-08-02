@@ -2,7 +2,7 @@
 ignore: |
   *.sops.*
   gotk-components.yaml
-  kustomization.yaml
+  .github/ISSUE_TEMPLATE/config.yml
 extends: default
 rules:
   truthy:
@@ -16,4 +16,4 @@ rules:
   brackets:
     min-spaces-inside: 0
     max-spaces-inside: 0
-  indentation: enable
+  indentation: {spaces: 2, indent-sequences: consistent}

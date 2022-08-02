@@ -16,7 +16,7 @@ tasks:
   yaml:
     desc: Lint YAML
     cmds:
-      - yamllint -c '.github/lint/.yamllint.yaml' .
+      - yamllint -c '.github/linters/.yamllint.yaml' .
     ignore_errors: true
 
   format:
