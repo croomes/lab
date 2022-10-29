@@ -22,4 +22,35 @@ spec:
       repository: tccr.io/truecharts/home-assistant
       tag: latest
       pullPolicy: Always
-
+    env:
+      TZ: "Europe/London"
+    podSecurityContext:
+      supplementalGroups:
+        - 568
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          external-dns/is-public: "true"
+          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          hajimari.io/appName: "home assistant"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "simple-icons:homeassistant"
+        hosts:
+        - host: "ha.${SECRET_DOMAIN}"
+          paths:
+          - path: /
+            pathType: Prefix
+        tls:
+        - hosts:
+          - "ha.${SECRET_DOMAIN}"
+          secretName: "ha-tls"
+        secretName: "ha-tls"
+    hostNetwork: true
+    persistence:
+      config:
+        enabled: true
+        existingClaim: ha
