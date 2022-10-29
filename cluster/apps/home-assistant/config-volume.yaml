@@ -30,6 +30,7 @@ metadata:
   namespace: ha
 spec:
   storageClassName: local-storage
+  volumeName: ha
   accessModes:
   - ReadWriteOnce
   resources:
