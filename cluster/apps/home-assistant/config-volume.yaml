@@ -10,6 +10,7 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
   local:
     path: /data/apps/ha
   nodeAffinity:
@@ -29,6 +30,7 @@ metadata:
   namespace: ha
 spec:
   volumeName: ha
+  storageClassName: ""
   accessModes:
   - ReadWriteOnce
   resources:
