@@ -1,0 +1,10 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: aste88
+  namespace: flux-system
+spec:
+  interval: 15m
+  url: https://aste88.github.io/helm-charts/
+  timeout: 3m
