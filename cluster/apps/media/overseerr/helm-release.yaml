@@ -19,10 +19,12 @@ spec:
       interval: 5m
   values:
     image:
-      repository: ghcr.io/sct/overseerr
+      repository: linuxserver/overseerr
       tag: latest
       pullPolicy: Always
     env:
+      PUID: 568
+      PGID: 568    
       TZ: "Europe/London"
     podSecurityContext:
       supplementalGroups:

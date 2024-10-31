@@ -23,6 +23,8 @@ spec:
       tag: latest
       pullPolicy: Always
     env:
+      PUID: 568
+      PGID: 568    
       TZ: "Europe/London"
     podSecurityContext:
       supplementalGroups:
